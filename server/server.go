@@ -1,6 +1,8 @@
 package server
 
 import (
+	"html/template"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -36,6 +38,14 @@ type (
 	}
 )
 
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
+
 // Start the server
 func (s Server) Start() {
 	e := echo.New()
@@ -59,6 +69,18 @@ func (s Server) Start() {
 
 	// version endpoint
 	e.GET("/version", s.GetVersion)
+
+	// static CSS/images
+	e.Static("/", "assets")
+
+	t := &Template{
+		templates: template.Must(template.ParseGlob("views/*.html")),
+	}
+	e.Renderer = t
+
+	// TODO figure out the real request URLs to use
+	e.GET("/start", s.RenderStart)
+	e.GET("/end", s.RenderEnd)
 
 	port := os.Getenv("NFTKEYME_SERVICE_PORT")
 	if port == "" {
@@ -162,4 +184,37 @@ func hasPolicyID(assets []nftkeyme.Asset) bool {
 	}
 
 	return false
+}
+
+func (s Server) RenderStart(c echo.Context) error {
+	start := struct {
+		Title       string
+		Description string
+		Link        string
+	}{
+		Title:       "Some App",
+		Description: "Here's why you should...",
+		Link:        "https://google.com",
+	}
+	err := c.Render(http.StatusOK, "start.html", start)
+	if err != nil {
+		logrus.WithError(err).Error("Error rendering start template")
+	}
+	return err
+}
+
+func (s Server) RenderEnd(c echo.Context) error {
+	start := struct {
+		Description string
+		Link        string
+	}{
+		Description: "Here's what you do next...",
+		Link:        "https://google.com",
+	}
+	err := c.Render(http.StatusOK, "end.html", start)
+	if err != nil {
+		logrus.WithError(err).Error("Error rendering start template")
+	}
+	return err
+
 }

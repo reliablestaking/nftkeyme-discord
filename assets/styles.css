@@ -1,0 +1,94 @@
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #303030;
+  color: white;
+}
+main {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  background-size: cover;
+}
+main.locked {
+  background-image: url("/locked-min.jpeg");
+}
+main.unlocked {
+  background-image: url("/unlocked-min.jpeg");
+  background-position: right;
+}
+header,
+footer {
+  padding: 16px;
+  background-color: #0288d1;
+  color: white;
+  font-size: 14px;
+}
+footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  place-content: center;
+  gap: 8px;
+}
+footer a,
+footer a:visited,
+footer a:active,
+footer a:hover {
+  color: white;
+}
+header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+.hero {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  place-content: center;
+  padding: 64px;
+  max-width: 50%;
+  text-align: center;
+}
+.locked .hero {
+  place-self: flex-end;
+}
+.hero h1 {
+  font-size: 52px;
+}
+@media only screen and (max-width: 960px) {
+  main {
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+}
+.buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  place-content: center;
+}
+@media only screen and (max-width: 600px) {
+  .hero {
+    max-width: 80%;
+  }
+  .hero h1 {
+    font-size: 36px;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  .locked .hero {
+    margin-right: 64px;
+  }
+}
