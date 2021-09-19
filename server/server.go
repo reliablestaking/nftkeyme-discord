@@ -30,6 +30,8 @@ type (
 		NftkeymeClient      nftkeyme.NftkeymeClient
 		DiscordSession      *discordgo.Session
 		PolicyIDCheck       string
+		DiscordServerID     string
+		DiscordChannelID    string
 	}
 
 	// Version struct
@@ -166,7 +168,7 @@ func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 	if hasPolicy {
 		// grant access to channel
 		logrus.Infof("Adding user %s to role", state)
-		err = s.DiscordSession.GuildMemberRoleAdd("882816414652710912", state, "882817068112707626")
+		err = s.DiscordSession.GuildMemberRoleAdd(s.DiscordServerID, state, s.DiscordChannelID)
 		if err != nil {
 			logrus.WithError(err).Error("Error adding user to role")
 			return c.JSON(http.StatusInternalServerError, nil)

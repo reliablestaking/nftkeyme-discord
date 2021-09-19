@@ -95,6 +95,16 @@ func main() {
 		logrus.Fatalf("Policy id check")
 	}
 
+	serverID := os.Getenv("DISCORD_SERVER_ID")
+	if serverID == "" {
+		logrus.Fatalf("Discrod server id check")
+	}
+
+	channelID := os.Getenv("DISCORD_CHANNEL_ID")
+	if channelID == "" {
+		logrus.Fatalf("Channel id check")
+	}
+
 	// init server
 	server := server.Server{
 		Store:               store,
@@ -107,6 +117,8 @@ func main() {
 		DiscordSession:      discordBot,
 		DiscordAuthCodeURL:  discordAuthURL,
 		PolicyIDCheck:       policyIDCheck,
+		DiscordServerID:     serverID,
+		DiscordChannelID:    channelID,
 	}
 
 	// start server
