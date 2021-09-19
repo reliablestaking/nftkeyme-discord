@@ -29,6 +29,7 @@ type (
 		DiscordClient       discord.Client
 		NftkeymeClient      nftkeyme.NftkeymeClient
 		DiscordSession      *discordgo.Session
+		PolicyIDCheck       string
 	}
 
 	// Version struct
@@ -139,7 +140,7 @@ func (s Server) HandleDiscordAuthCode(c echo.Context) (err error) {
 func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 	authCode := c.QueryParam("code")
 	state := c.QueryParam("state")
-	logrus.Infof("Got auth code from nftkeyme %s and state/discordid %s", authCode, state)
+	logrus.Infof("Got auth code from nftkeyme %s and state/discord id %s", authCode, state)
 
 	//exchange code for token
 	token, err := s.NftkeymeOauthConfig.Exchange(oauth2.NoContext, authCode)
@@ -159,8 +160,9 @@ func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 	}
 
 	logrus.Infof("Found %d assets", len(assets))
+
 	//check for policy id
-	hasPolicy := hasPolicyID(assets)
+	hasPolicy := s.hasPolicyID(assets)
 	if hasPolicy {
 		// grant access to channel
 		logrus.Infof("Adding user %s to role", state)
@@ -171,14 +173,16 @@ func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 		}
 	} else {
 		// tell user they don't have access
+		s.RenderError("No trybbles detected in your linked wallets", c)
+		return nil
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	return c.Redirect(302, "/end")
 }
 
-func hasPolicyID(assets []nftkeyme.Asset) bool {
+func (s Server) hasPolicyID(assets []nftkeyme.Asset) bool {
 	for _, asset := range assets {
-		if asset.PolicyId == "c6443f0c069487e1a8afbc0c8a3ac00fd26aee56f2f2f5d2bee12be4" {
+		if asset.PolicyId == s.PolicyIDCheck {
 			return true
 		}
 	}
@@ -192,9 +196,9 @@ func (s Server) RenderStart(c echo.Context) error {
 		Description string
 		Link        string
 	}{
-		Title:       "Some App",
-		Description: "Here's why you should...",
-		Link:        "https://google.com",
+		Title:       "Trybbles Discord",
+		Description: "Gain access to Trybbles discord using NFT Key Me!",
+		Link:        "/init",
 	}
 	err := c.Render(http.StatusOK, "start.html", start)
 	if err != nil {
@@ -208,7 +212,7 @@ func (s Server) RenderEnd(c echo.Context) error {
 		Description string
 		Link        string
 	}{
-		Description: "Here's what you do next...",
+		Description: "You can now access the special discord channel",
 		Link:        "https://google.com",
 	}
 	err := c.Render(http.StatusOK, "end.html", start)
@@ -216,5 +220,17 @@ func (s Server) RenderEnd(c echo.Context) error {
 		logrus.WithError(err).Error("Error rendering start template")
 	}
 	return err
+}
 
+func (s Server) RenderError(errorMsg string, c echo.Context) error {
+	errorEnd := struct {
+		Error string
+	}{
+		Error: errorMsg,
+	}
+	err := c.Render(http.StatusOK, "error.html", errorEnd)
+	if err != nil {
+		logrus.WithError(err).Error("Error rendering start template")
+	}
+	return err
 }

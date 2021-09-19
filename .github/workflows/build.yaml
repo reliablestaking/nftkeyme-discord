@@ -1,0 +1,39 @@
+name: Golang Build
+
+on:
+  push:
+    branches: [main, prod]
+  pull_request:
+    branches: [main]
+
+env:
+  IMAGE_NAME: nftkeyme-discord
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+      - name: Build App
+        run: go build
+      - name: Build Docker
+        run: docker build -t $IMAGE_NAME .
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_ACCESS_TOKEN }}
+      - name: Publish Docker
+        run: |
+          doctl registry login
+          docker tag $IMAGE_NAME registry.digitalocean.com/reliable-staking-registry/$IMAGE_NAME
+          docker tag $IMAGE_NAME registry.digitalocean.com/reliable-staking-registry/$IMAGE_NAME:${GITHUB_REF##*/}
+          docker push registry.digitalocean.com/reliable-staking-registry/$IMAGE_NAME
+          docker push registry.digitalocean.com/reliable-staking-registry/$IMAGE_NAME:${GITHUB_REF##*/}
+      - name: Update App
+        run: |
+          doctl apps list

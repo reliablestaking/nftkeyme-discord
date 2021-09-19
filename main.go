@@ -90,6 +90,11 @@ func main() {
 		logrus.Fatalf("Discord auth url not found")
 	}
 
+	policyIDCheck := os.Getenv("POLICY_ID_CHECK")
+	if policyIDCheck == "" {
+		logrus.Fatalf("Policy id check")
+	}
+
 	// init server
 	server := server.Server{
 		Store:               store,
@@ -101,6 +106,7 @@ func main() {
 		NftkeymeClient:      nftkeyme.NewClientFromEnvironment(),
 		DiscordSession:      discordBot,
 		DiscordAuthCodeURL:  discordAuthURL,
+		PolicyIDCheck:       policyIDCheck,
 	}
 
 	// start server
