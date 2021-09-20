@@ -74,7 +74,7 @@ func (s Server) Start() {
 	e.GET("/version", s.GetVersion)
 
 	// static CSS/images
-	e.Static("/", "assets")
+	e.Static("/static", "assets")
 
 	t := &Template{
 		templates: template.Must(template.ParseGlob("views/*.html")),
@@ -82,7 +82,7 @@ func (s Server) Start() {
 	e.Renderer = t
 
 	// TODO figure out the real request URLs to use
-	e.GET("/start", s.RenderStart)
+	e.GET("/", s.RenderStart)
 	e.GET("/end", s.RenderEnd)
 
 	port := os.Getenv("NFTKEYME_SERVICE_PORT")
