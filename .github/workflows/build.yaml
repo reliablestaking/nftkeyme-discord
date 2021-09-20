@@ -20,7 +20,10 @@ jobs:
           stable: 'false'
           go-version: '1.15.6'
       - name: Build App
-        run: go build
+        run: | 
+          go build
+          ls
+          pwd
       - name: Build Docker
         run: docker build -t $IMAGE_NAME .
       - name: Install doctl
