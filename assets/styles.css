@@ -22,10 +22,10 @@ main {
   background-size: cover;
 }
 main.locked {
-  background-image: url("/locked-min.jpeg");
+  background-image: url("/static/locked-min.jpeg");
 }
 main.unlocked {
-  background-image: url("/unlocked-min.jpeg");
+  background-image: url("/static/unlocked-min.jpeg");
   background-position: right;
 }
 header,
