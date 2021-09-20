@@ -25,7 +25,9 @@ jobs:
           export GOOS=linux
           go build .
       - name: Build Docker
-        run: docker build -t $IMAGE_NAME .
+        run: |
+          ls
+          docker build -t $IMAGE_NAME .
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
