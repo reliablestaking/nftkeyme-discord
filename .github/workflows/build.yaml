@@ -21,9 +21,9 @@ jobs:
           go-version: '1.15.6'
       - name: Build App
         run: | 
-          go build
-          ls
-          pwd
+          export GOARCH=amd64
+          export GOOS=linux
+          go build .
       - name: Build Docker
         run: docker build -t $IMAGE_NAME .
       - name: Install doctl
