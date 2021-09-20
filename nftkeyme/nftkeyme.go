@@ -18,15 +18,10 @@ type (
 	}
 
 	Asset struct {
-		PolicyId        string          `json:"policy_id"`
-		AssetName       string          `json:"asset_name"`
-		Quantity        string          `json:"quantity"`
-		OnChainMetadata OnChainMetadata `json:"onchain_metadata"`
-	}
-
-	OnChainMetadata struct {
-		Name  string `json:"name"`
-		Image string `json:"image"`
+		PolicyId        string                 `json:"policy_id"`
+		AssetName       string                 `json:"asset_name"`
+		Quantity        string                 `json:"quantity"`
+		OnChainMetadata map[string]interface{} `json:"onchain_metadata"`
 	}
 )
 
