@@ -57,7 +57,7 @@ func main() {
 	// init discord server
 	//TODO: make configurable
 	discordOauthConfig := &oauth2.Config{
-		RedirectURL:  "http://localhost:8080/discord",
+		RedirectURL:  os.Getenv("DISCORD_REDIRECT_URL"),
 		ClientID:     os.Getenv("DISCORD_CLIENT_ID"),
 		ClientSecret: os.Getenv("DISCORD_CLIENT_SECRET"),
 		Scopes:       []string{"identity"},
@@ -65,7 +65,7 @@ func main() {
 	}
 
 	nftkeymeOauthConfig := &oauth2.Config{
-		RedirectURL:  "http://localhost:8080/nftkeyme",
+		RedirectURL:  os.Getenv("NFTKEYME_REDIRECT_URL"),
 		ClientID:     os.Getenv("NFTKEYME_CLIENT_ID"),
 		ClientSecret: os.Getenv("NFTKEYME_CLIENT_SECRET"),
 		Scopes:       []string{"offline assets"},
