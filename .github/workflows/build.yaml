@@ -23,6 +23,7 @@ jobs:
         run: | 
           export GOARCH=amd64
           export GOOS=linux
+          export CGO_ENABLED=0
           go build .
       - name: Build Docker
         run: |
