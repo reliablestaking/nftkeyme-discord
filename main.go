@@ -121,6 +121,9 @@ func main() {
 		DiscordChannelID:    channelID,
 	}
 
+	// start monitor
+	go server.VerifyAccess()
+
 	// start server
 	server.Start()
 }

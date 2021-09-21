@@ -51,6 +51,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 // Start the server
 func (s Server) Start() {
+	logrus.Info("Starting server")
 	e := echo.New()
 
 	allowedOriginsCsv := make([]string, 0)

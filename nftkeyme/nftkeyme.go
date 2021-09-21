@@ -59,7 +59,7 @@ func (client NftkeymeClient) GetAssetsForUser(token string) ([]Asset, error) {
 		return nil, nil
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		logrus.Errorf("Error getting asset info %d", resp.StatusCode)
 		return nil, fmt.Errorf("Error getting asset info %d", resp.StatusCode)
 	}

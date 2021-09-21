@@ -35,6 +35,17 @@ func (s Store) GetUserByDiscordID(discordUserID string) (*DiscordUser, error) {
 	return &discordUser, nil
 }
 
+// GetAllDiscordUsers Gets all users
+func (s Store) GetAllDiscordUsers() ([]DiscordUser, error) {
+	discordUsers := []DiscordUser{}
+	err := s.Db.Select(&discordUsers, "SELECT * FROM discord_user")
+	if err != nil {
+		return nil, err
+	}
+
+	return discordUsers, nil
+}
+
 // InsertDiscordUser inserts a new user into the db
 func (s Store) InsertDiscordUser(discordUserID, nftkeymeAccessToken, nftkeymeRefreshToken string) error {
 	insertUserQuery := `INSERT INTO discord_user (discord_user_id,nftkeyme_access_token,nftkeyme_refresh_token) VALUES($1, $2, $3)`
