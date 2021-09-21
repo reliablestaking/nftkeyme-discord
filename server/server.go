@@ -194,6 +194,7 @@ func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 			return c.JSON(http.StatusInternalServerError, nil)
 		}
 	} else {
+		logrus.Errorf("No trybbles detected in user linked wallet %s", state)
 		// tell user they don't have access
 		s.RenderError("No trybbles detected in your linked wallets", c)
 		return nil

@@ -44,6 +44,8 @@ func (s Server) VerifyAccess() {
 				continue
 			}
 
+			logrus.Infof("Found %d assets for user %s", len(assets), discordUser.DiscordUserID)
+
 			//check for policy id
 			hasPolicy := s.hasPolicyID(assets)
 			if !hasPolicy {
@@ -54,7 +56,17 @@ func (s Server) VerifyAccess() {
 					logrus.WithError(err).Error("Error removing user from role")
 					continue
 				}
+			} else {
+				// add access to channel
+				logrus.Infof("Adding user %s from role", discordUser.DiscordUserID)
+				err = s.DiscordSession.GuildMemberRoleAdd(s.DiscordServerID, discordUser.DiscordUserID, s.DiscordChannelID)
+				if err != nil {
+					logrus.WithError(err).Error("Error adding user to role")
+					continue
+				}
 			}
+
+			time.Sleep(5 * time.Second)
 		}
 
 		time.Sleep(12 * time.Hour)
