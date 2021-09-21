@@ -220,7 +220,7 @@ func (s Server) RenderStart(c echo.Context) error {
 		Link        string
 	}{
 		Title:       "Trybbles Discord",
-		Description: "Gain access to Trybbles discord using NFT Key Me!",
+		Description: "Gain access to Trybbles Club discord channel using NFT Key Me!",
 		Link:        "/init",
 	}
 	err := c.Render(http.StatusOK, "start.html", start)
@@ -236,7 +236,7 @@ func (s Server) RenderEnd(c echo.Context) error {
 		Description string
 		Link        string
 	}{
-		Description: "You can now access the special discord channel",
+		Description: "You can now access the Trybbles Club discord channel!",
 		Link:        "",
 	}
 	err := c.Render(http.StatusOK, "end.html", start)
