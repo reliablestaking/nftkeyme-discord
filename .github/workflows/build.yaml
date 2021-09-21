@@ -2,7 +2,7 @@ name: Golang Build
 
 on:
   push:
-    branches: [main, prod]
+    branches: [main,]
   pull_request:
     branches: [main]
 
@@ -27,7 +27,6 @@ jobs:
           go build .
       - name: Build Docker
         run: |
-          ls
           docker build -t $IMAGE_NAME .
       - name: Install doctl
         uses: digitalocean/action-doctl@v2

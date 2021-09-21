@@ -43,7 +43,7 @@ func NewClientFromEnvironment() Client {
 
 //GetUserInfo get user info for the given token
 func (client Client) GetUserInfo(token string) (*UserInfo, error) {
-	logrus.Info("Getting user info")
+	logrus.Info("Getting discord user info")
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/users/@me", client.BaseURL), nil)
 	req.Header.Add("Authorization", "Bearer "+token)
@@ -59,7 +59,7 @@ func (client Client) GetUserInfo(token string) (*UserInfo, error) {
 		return nil, nil
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		logrus.Errorf("Error getting user info %d", resp.StatusCode)
 		return nil, fmt.Errorf("Error getting user info %d", resp.StatusCode)
 	}

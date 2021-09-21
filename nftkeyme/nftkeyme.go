@@ -12,11 +12,13 @@ import (
 )
 
 type (
+	// NftkeymeClient struct to hold client
 	NftkeymeClient struct {
 		HttpClient http.Client
 		BaseUrl    string
 	}
 
+	// Asset struct to hold returned asset data
 	Asset struct {
 		PolicyId        string                 `json:"policy_id"`
 		AssetName       string                 `json:"asset_name"`

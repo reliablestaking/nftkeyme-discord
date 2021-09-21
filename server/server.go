@@ -51,7 +51,7 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 // Start the server
 func (s Server) Start() {
-	logrus.Info("Starting server")
+	logrus.Info("Starting server...")
 	e := echo.New()
 
 	allowedOriginsCsv := make([]string, 0)
@@ -82,7 +82,7 @@ func (s Server) Start() {
 	}
 	e.Renderer = t
 
-	// TODO figure out the real request URLs to use
+	// start / end urls
 	e.GET("/", s.RenderStart)
 	e.GET("/end", s.RenderEnd)
 
@@ -111,8 +111,8 @@ func (s Server) InitFlow(c echo.Context) (err error) {
 
 // HandleDiscordAuthCode handle redirect
 func (s Server) HandleDiscordAuthCode(c echo.Context) (err error) {
+	logrus.Infof("Handling auth code from discord")
 	authCode := c.QueryParam("code")
-	logrus.Infof("Got auth code from discord %s", authCode)
 
 	//exchange code for token
 	token, err := s.DiscordOauthConfig.Exchange(oauth2.NoContext, authCode)
@@ -120,7 +120,6 @@ func (s Server) HandleDiscordAuthCode(c echo.Context) (err error) {
 		logrus.WithError(err).Error("Error exchange code for token")
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
-	logrus.Infof("Got token %s", token.AccessToken)
 
 	// lookup user info
 	userInfo, err := s.DiscordClient.GetUserInfo(token.AccessToken)
@@ -131,7 +130,7 @@ func (s Server) HandleDiscordAuthCode(c echo.Context) (err error) {
 
 	logrus.Infof("Got user with id %s and email %s", userInfo.ID, userInfo.Email)
 
-	//redirect to nftkey me for now... use state of id
+	//redirect to nftkey me use state of discord user id
 	url := s.NftkeymeOauthConfig.AuthCodeURL(userInfo.ID)
 
 	return c.Redirect(302, url)
@@ -141,7 +140,7 @@ func (s Server) HandleDiscordAuthCode(c echo.Context) (err error) {
 func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 	authCode := c.QueryParam("code")
 	state := c.QueryParam("state")
-	logrus.Infof("Got auth code from nftkeyme %s and state/discord id %s", authCode, state)
+	logrus.Infof("Handling auth code from nftkeyme with state/discord id %s", state)
 
 	//exchange code for token
 	token, err := s.NftkeymeOauthConfig.Exchange(oauth2.NoContext, authCode)
@@ -149,9 +148,8 @@ func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 		logrus.WithError(err).Error("Error exchange code for token")
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
-	logrus.Infof("Got token %s", token.AccessToken)
 
-	// persist
+	// persist tokens
 	logrus.Infof("Checking if user already exsists in db %s", state)
 	discordUser, err := s.Store.GetUserByDiscordID(state)
 	if err != nil {
@@ -212,6 +210,7 @@ func (s Server) hasPolicyID(assets []nftkeyme.Asset) bool {
 	return false
 }
 
+// RenderStart renders start page
 func (s Server) RenderStart(c echo.Context) error {
 	start := struct {
 		Title       string
@@ -229,13 +228,14 @@ func (s Server) RenderStart(c echo.Context) error {
 	return err
 }
 
+// RenderEnd renders end page
 func (s Server) RenderEnd(c echo.Context) error {
 	start := struct {
 		Description string
 		Link        string
 	}{
 		Description: "You can now access the special discord channel",
-		Link:        "https://google.com",
+		Link:        "",
 	}
 	err := c.Render(http.StatusOK, "end.html", start)
 	if err != nil {
@@ -244,6 +244,7 @@ func (s Server) RenderEnd(c echo.Context) error {
 	return err
 }
 
+// RenderError renders an error page
 func (s Server) RenderError(errorMsg string, c echo.Context) error {
 	errorEnd := struct {
 		Error string
