@@ -41,10 +41,12 @@ type (
 	}
 )
 
+// Template struct to store templates
 type Template struct {
 	templates *template.Template
 }
 
+// Render render a template
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
