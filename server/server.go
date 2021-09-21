@@ -130,8 +130,6 @@ func (s Server) HandleDiscordAuthCode(c echo.Context) (err error) {
 
 	logrus.Infof("Got user with id %s and email %s", userInfo.ID, userInfo.Email)
 
-	//TODO: persist this
-
 	//redirect to nftkey me for now... use state of id
 	url := s.NftkeymeOauthConfig.AuthCodeURL(userInfo.ID)
 
@@ -152,7 +150,28 @@ func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 	}
 	logrus.Infof("Got token %s", token.AccessToken)
 
-	//TODO: persist this?
+	// persist
+	logrus.Infof("Checking if user already exsists in db %s", state)
+	discordUser, err := s.Store.GetUserByDiscordID(state)
+	if err != nil {
+		logrus.WithError(err).Errorf("Error getting discord user %s", state)
+		return c.JSON(http.StatusInternalServerError, nil)
+	}
+	if discordUser == nil {
+		logrus.Infof("Inserting discord user record %s", state)
+		err = s.Store.InsertDiscordUser(state, token.AccessToken, token.RefreshToken)
+		if err != nil {
+			logrus.WithError(err).Errorf("Error persisting discord user %s", state)
+			return c.JSON(http.StatusInternalServerError, nil)
+		}
+	} else {
+		logrus.Infof("Updating discord user record %s", state)
+		err = s.Store.UpdateDiscordUser(state, token.AccessToken, token.RefreshToken)
+		if err != nil {
+			logrus.WithError(err).Errorf("Error persisting discord user %s", state)
+			return c.JSON(http.StatusInternalServerError, nil)
+		}
+	}
 
 	// get assets
 	assets, err := s.NftkeymeClient.GetAssetsForUser(token.AccessToken)
