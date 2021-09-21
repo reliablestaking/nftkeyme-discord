@@ -1,3 +1,24 @@
+### Overview 
+
+This application provides an example integration between https://nftkey.me and Discord. It grants access to a role in discord based on a user having an NFT from a specified policy id. 
+
+An overview of the flow in the app...
+
+1. User clicks get started on main page
+1. This directs users to /init which in turn directs user to discord oauth auth url (redirect url in discord should be /discord in this app)
+1. User login / consents in discord
+1. User is redirected back to /discord, 
+   1. auth code is exchanged for access token
+   1. discord user id is queried using access token
+   1. user is redirected to NFT Key auth code url
+1. User login / consents in NFT Key 
+1. User is directed back to /nftkeyme
+   1. auth code is exchanged for access token
+   1. access and refresh tokens are persisted to db
+   1. NFTs/Assets are queried from NFT Key using access token
+   1. discord user is added to role if policy check is successfull
+1. There is a periodic check to ensure user doesn't move NFT out of their wallet
+
 ### Env Vars To Run
 
 ```
