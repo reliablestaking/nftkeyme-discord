@@ -30,6 +30,7 @@ func (s Server) VerifyAccess() {
 			}
 
 			if newToken.AccessToken != discordUser.NftkeymeAccessToken.String {
+				logrus.Infof("Updating discord user %s with new token", discordUser.DiscordUserID)
 				err = s.Store.UpdateDiscordUser(discordUser.DiscordUserID, newToken.AccessToken, newToken.RefreshToken)
 				if err != nil {
 					logrus.WithError(err).Error("Error updating discord user")
@@ -37,7 +38,7 @@ func (s Server) VerifyAccess() {
 				}
 			}
 
-			assets, err := s.NftkeymeClient.GetAssetsForUser(discordUser.NftkeymeAccessToken.String)
+			assets, err := s.NftkeymeClient.GetAssetsForUser(newToken.AccessToken)
 			if err != nil {
 				logrus.WithError(err).Error("Error getting assets")
 				continue
