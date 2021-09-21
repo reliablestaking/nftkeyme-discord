@@ -29,8 +29,6 @@ func (s Server) VerifyAccess() {
 				continue
 			}
 
-			logrus.Info(newToken.AccessToken)
-			logrus.Info(t.AccessToken)
 			if newToken.AccessToken != discordUser.NftkeymeAccessToken.String {
 				logrus.Infof("Updating discord user %s with new token", discordUser.DiscordUserID)
 				err = s.Store.UpdateDiscordUser(discordUser.DiscordUserID, newToken.AccessToken, newToken.RefreshToken)
