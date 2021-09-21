@@ -18,17 +18,19 @@ func (s Server) VerifyAccess() {
 
 		for _, discordUser := range discordUsers {
 			logrus.Infof("Verifying access for user %s", discordUser.DiscordUserID)
-			t := new(oauth2.Token)
-			t.AccessToken = discordUser.NftkeymeAccessToken.String
-			t.RefreshToken = discordUser.NftkeymeRefreshToken.String
+			t := oauth2.Token{
+				RefreshToken: discordUser.NftkeymeRefreshToken.String,
+			}
 
-			tokenSource := s.NftkeymeOauthConfig.TokenSource(oauth2.NoContext, t)
+			tokenSource := s.NftkeymeOauthConfig.TokenSource(oauth2.NoContext, &t)
 			newToken, err := tokenSource.Token()
 			if err != nil {
 				logrus.WithError(err).Error("Error getting token")
 				continue
 			}
 
+			logrus.Info(newToken.AccessToken)
+			logrus.Info(t.AccessToken)
 			if newToken.AccessToken != discordUser.NftkeymeAccessToken.String {
 				logrus.Infof("Updating discord user %s with new token", discordUser.DiscordUserID)
 				err = s.Store.UpdateDiscordUser(discordUser.DiscordUserID, newToken.AccessToken, newToken.RefreshToken)
