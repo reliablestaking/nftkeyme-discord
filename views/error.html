@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>NFT Key</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
@@ -12,24 +12,28 @@
     />
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
     <link type="text/css" rel="stylesheet" href="/static/styles.css" />
-    <link rel="preload" href="/static/locked-min.jpeg" as="image" />
-    <link rel="preload" href="/static/unlocked-min.jpeg" as="image" />
+    <link rel="preload" href="/static/locked-web-large.png" as="image" />
+    <link rel="preload" href="/static/locked-web-med.png" as="image" />
+    <link rel="preload" href="/static/locked-web-small.png" as="image" />
   </head>
 
   <body>
-    <header>
-      <h1>NFT Key</h1>
-    </header>
-    <main class="locked">
-      <section class="hero">
-        <h1>There was an error</h1>
-        <p>{{.Error}}</p>
-        </nav>
-      </section>
-    </main>
-    <footer>
-      <span>Copyright © 2021 NFT Key</span>
-      <a href="mailto:contact@reliablestaking.com">Contact Us</a>
-    </footer>
+    <div class="layout">
+      <header>
+        <h1>NFT Key</h1>
+      </header>
+      <main>
+        <section class="hero locked">
+          <div class="hero-wrapper">
+            <h1 class="hero-title">There was an error</h1>
+            <p class="hero-description">{{.Error}}</p>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <span>Copyright © 2021 NFT Key</span>
+        <a href="mailto:contact@reliablestaking.com">Contact Us</a>
+      </footer>
+    </div>
   </body>
 </html>
