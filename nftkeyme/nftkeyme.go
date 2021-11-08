@@ -44,11 +44,17 @@ func NewClientFromEnvironment() NftkeymeClient {
 }
 
 //GetAssetsForUser gets all the assets for the provided token/user
-func (client NftkeymeClient) GetAssetsForUser(token string) ([]Asset, error) {
+func (client NftkeymeClient) GetAssetsForUser(token string, policyID string) ([]Asset, error) {
 	logrus.Info("Getting asset info")
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/assets", client.BaseUrl), nil)
 	req.Header.Add("Authorization", "Bearer "+token)
+
+	q := req.URL.Query()
+	if policyID != "" {
+		q.Add("policyId", policyID)
+	}
+	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.HttpClient.Do(req)
 	if err != nil {

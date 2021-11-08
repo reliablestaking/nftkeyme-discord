@@ -38,7 +38,7 @@ func (s Server) VerifyAccess() {
 				}
 			}
 
-			assets, err := s.NftkeymeClient.GetAssetsForUser(newToken.AccessToken)
+			assets, err := s.NftkeymeClient.GetAssetsForUser(newToken.AccessToken, s.PolicyIDCheck)
 			if err != nil {
 				logrus.WithError(err).Error("Error getting assets")
 				continue

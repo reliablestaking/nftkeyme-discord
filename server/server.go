@@ -175,7 +175,7 @@ func (s Server) HandleNftkeymeAuthCode(c echo.Context) (err error) {
 	}
 
 	// get assets
-	assets, err := s.NftkeymeClient.GetAssetsForUser(token.AccessToken)
+	assets, err := s.NftkeymeClient.GetAssetsForUser(token.AccessToken, s.PolicyIDCheck)
 	if err != nil {
 		logrus.WithError(err).Error("Error getting assets")
 		return c.JSON(http.StatusInternalServerError, nil)
