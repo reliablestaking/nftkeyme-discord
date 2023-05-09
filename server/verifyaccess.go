@@ -17,7 +17,7 @@ func (s Server) VerifyAccess() {
 		}
 
 		for _, discordUser := range discordUsers {
-			logrus.Infof("Verifying access for user %s", discordUser.DiscordUserID)
+			//logrus.Infof("Verifying access for user %s", discordUser.DiscordUserID)
 			t := oauth2.Token{
 				RefreshToken: discordUser.NftkeymeRefreshToken.String,
 			}
@@ -30,7 +30,7 @@ func (s Server) VerifyAccess() {
 			}
 
 			if newToken.AccessToken != discordUser.NftkeymeAccessToken.String {
-				logrus.Infof("Updating discord user %s with new token", discordUser.DiscordUserID)
+				//logrus.Infof("Updating discord user %s with new token", discordUser.DiscordUserID)
 				err = s.Store.UpdateDiscordUser(discordUser.DiscordUserID, newToken.AccessToken, newToken.RefreshToken)
 				if err != nil {
 					logrus.WithError(err).Error("Error updating discord user")
@@ -38,33 +38,43 @@ func (s Server) VerifyAccess() {
 				}
 			}
 
-			assets, err := s.NftkeymeClient.GetAssetsForUser(newToken.AccessToken, s.PolicyIDCheck)
+			// assets, err := s.NftkeymeClient.GetAssetsForUser(newToken.AccessToken, s.PolicyIDCheck)
+			// if err != nil {
+			// 	logrus.WithError(err).Error("Error getting assets")
+			// 	continue
+			// }
+
+			keys, err := s.NftkeymeClient.GetStakeKeyForUser(newToken.AccessToken)
 			if err != nil {
 				logrus.WithError(err).Error("Error getting assets")
 				continue
 			}
 
-			logrus.Infof("Found %d assets for user %s", len(assets), discordUser.DiscordUserID)
+			if len(keys) > 0 {
+				logrus.Info("%s,%s", discordUser.DiscordUserID, keys[0].KeyAddress)
+			}
+
+			//logrus.Infof("Found %d assets for user %s", len(assets), discordUser.DiscordUserID)
 
 			//check for policy id
-			hasPolicy := s.hasPolicyID(assets)
-			if !hasPolicy {
-				// removing access to channel
-				logrus.Infof("Removing user %s from role", discordUser.DiscordUserID)
-				err = s.DiscordSession.GuildMemberRoleRemove(s.DiscordServerID, discordUser.DiscordUserID, s.DiscordChannelID)
-				if err != nil {
-					logrus.WithError(err).Error("Error removing user from role")
-					continue
-				}
-			} else {
-				// add access to channel
-				logrus.Infof("Adding user %s from role", discordUser.DiscordUserID)
-				err = s.DiscordSession.GuildMemberRoleAdd(s.DiscordServerID, discordUser.DiscordUserID, s.DiscordChannelID)
-				if err != nil {
-					logrus.WithError(err).Error("Error adding user to role")
-					continue
-				}
-			}
+			// hasPolicy := s.hasPolicyID(assets)
+			// if !hasPolicy {
+			// 	// removing access to channel
+			// 	//logrus.Infof("Removing user %s from role", discordUser.DiscordUserID)
+			// 	err = s.DiscordSession.GuildMemberRoleRemove(s.DiscordServerID, discordUser.DiscordUserID, s.DiscordChannelID)
+			// 	if err != nil {
+			// 		logrus.WithError(err).Error("Error removing user from role")
+			// 		continue
+			// 	}
+			// } else {
+			// 	// add access to channel
+			// 	//logrus.Infof("Adding user %s from role", discordUser.DiscordUserID)
+			// 	err = s.DiscordSession.GuildMemberRoleAdd(s.DiscordServerID, discordUser.DiscordUserID, s.DiscordChannelID)
+			// 	if err != nil {
+			// 		logrus.WithError(err).Error("Error adding user to role")
+			// 		continue
+			// 	}
+			// }
 
 			time.Sleep(5 * time.Second)
 		}

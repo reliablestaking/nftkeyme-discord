@@ -25,6 +25,11 @@ type (
 		Quantity        string                 `json:"quantity"`
 		OnChainMetadata map[string]interface{} `json:"onchain_metadata"`
 	}
+
+	// StakeKey struct to hold returned asset data
+	StakeKey struct {
+		KeyAddress string `json:"keyAddress"`
+	}
 )
 
 //NewClientFromEnvironment create new nftkeyme client using env vars
@@ -78,6 +83,41 @@ func (client NftkeymeClient) GetAssetsForUser(token string, policyID string) ([]
 	}
 
 	assets := make([]Asset, 0)
+	err = json.Unmarshal(bytes, &assets)
+	if err != nil {
+		return nil, err
+	}
+
+	return assets, nil
+}
+
+//GetAssetsForUser gets all the assets for the provided token/user
+func (client NftkeymeClient) GetStakeKeyForUser(token string) ([]StakeKey, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/stakekeys", client.BaseUrl), nil)
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	resp, err := client.HttpClient.Do(req)
+	if err != nil {
+		logrus.Errorf("Error posting request", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 404 {
+		return nil, nil
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		logrus.Errorf("Error getting asset info %d", resp.StatusCode)
+		return nil, fmt.Errorf("Error getting asset info %d", resp.StatusCode)
+	}
+
+	bytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	assets := make([]StakeKey, 0)
 	err = json.Unmarshal(bytes, &assets)
 	if err != nil {
 		return nil, err
