@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -51,7 +52,7 @@ func (s Server) VerifyAccess() {
 			}
 
 			if len(keys) > 0 {
-				logrus.Info("%s,%s", discordUser.DiscordUserID, keys[0].KeyAddress)
+				fmt.Println(discordUser.DiscordUserID + "," + keys[0].KeyAddress)
 			}
 
 			//logrus.Infof("Found %d assets for user %s", len(assets), discordUser.DiscordUserID)
@@ -76,7 +77,7 @@ func (s Server) VerifyAccess() {
 			// 	}
 			// }
 
-			time.Sleep(5 * time.Second)
+			time.Sleep(1 * time.Second)
 		}
 
 		time.Sleep(12 * time.Hour)
